@@ -87,3 +87,12 @@ app.*.map.json
 key.properties
 *.env
 *.env.*
+
+# Firebase Project & Credentials
+lib/firebase_options.dart
+!lib/firebase_options.example.dart
+**/android/app/google-services.json
+**/ios/Runner/GoogleService-Info.plist
+firebase.json
+.firebaserc
+

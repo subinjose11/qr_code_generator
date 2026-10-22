@@ -1,3 +1,6 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,12 +10,29 @@ import 'package:google_fonts/google_fonts.dart';
 import 'core/router/app_router.dart';
 import 'data/repositories/qr_repository.dart';
 import 'domain/repositories/i_qr_repository.dart';
+import 'firebase_options.dart';
 import 'presentation/providers/repository_provider.dart';
 import 'presentation/providers/theme_provider.dart';
 
 void main() async {
   final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+
+  // Initialize Firebase & Crashlytics
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    if (!kIsWeb) {
+      FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+      PlatformDispatcher.instance.onError = (error, stack) {
+        FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+        return true;
+      };
+    }
+  } catch (e) {
+    debugPrint('Firebase initialization error: $e');
+  }
 
   final repository = QrRepository();
   await repository.init();

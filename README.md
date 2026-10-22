@@ -167,12 +167,22 @@ lib/
    flutter pub get
    ```
 
-3. **Run tests:**
+3. **Configure Firebase:**
+   The project is pre-configured with Firebase Core, Auth, Firestore, Crashlytics, and Analytics. For a quick start or testing, copy the template config:
+   ```bash
+   cp lib/firebase_options.example.dart lib/firebase_options.dart
+   ```
+   Or link your own Firebase project with FlutterFire CLI:
+   ```bash
+   flutterfire configure
+   ```
+
+4. **Run tests:**
    ```bash
    flutter test
    ```
 
-4. **Run the application:**
+5. **Run the application:**
    ```bash
    # Android
    flutter run -d android
