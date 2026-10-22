@@ -360,9 +360,12 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
               ),
             ),
             const SizedBox(height: 8),
-            Row(
+            Wrap(
+              spacing: 6,
+              runSpacing: 4,
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: [
-                if (isCustomTitle) ...[
+                if (isCustomTitle)
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                     decoration: BoxDecoration(
@@ -378,8 +381,6 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8),
-                ],
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                   decoration: BoxDecoration(
@@ -412,7 +413,6 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(width: 8),
                 Text(
                   '${item.createdAt.day}/${item.createdAt.month}/${item.createdAt.year}',
                   style: TextStyle(
