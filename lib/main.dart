@@ -7,6 +7,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'core/router/app_router.dart';
 import 'data/repositories/qr_repository.dart';
 import 'domain/repositories/i_qr_repository.dart';
@@ -34,12 +36,13 @@ void main() async {
     debugPrint('Firebase initialization error: $e');
   }
 
+  final prefs = await SharedPreferences.getInstance();
   final repository = QrRepository();
   await repository.init();
 
   FlutterNativeSplash.remove();
 
-  runApp(QrStudioApp(repository: repository));
+  runApp(QrStudioApp(repository: repository, sharedPreferences: prefs));
 }
 
 ThemeData _buildM3Theme(Brightness brightness) {
@@ -277,22 +280,28 @@ ThemeData _buildM3Theme(Brightness brightness) {
 
 class QrStudioApp extends StatelessWidget {
   final IQrRepository? repository;
+  final SharedPreferences? sharedPreferences;
   final bool showSplash;
 
-  const QrStudioApp({super.key, this.repository, this.showSplash = true});
+  const QrStudioApp({
+    super.key,
+    this.repository,
+    this.sharedPreferences,
+    this.showSplash = true,
+  });
 
   @override
   Widget build(BuildContext context) {
     final app = _QrStudioAppView(showSplash: showSplash);
 
-    if (repository != null) {
-      return ProviderScope(
-        overrides: [qrRepositoryProvider.overrideWithValue(repository!)],
-        child: app,
-      );
-    }
-
-    return app;
+    return ProviderScope(
+      overrides: [
+        if (repository != null) qrRepositoryProvider.overrideWithValue(repository!),
+        if (sharedPreferences != null)
+          sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+      ],
+      child: app,
+    );
   }
 }
 
