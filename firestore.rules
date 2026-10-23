@@ -1,0 +1,16 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Allow authenticated users full access to their own QR codes collection
+    match /users/{userId}/qr_codes/{qrId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Default: block access to any other unspecified collections
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

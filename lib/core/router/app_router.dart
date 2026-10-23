@@ -7,6 +7,7 @@ import '../../data/models/qr_type.dart';
 import '../../presentation/screens/customizer_screen.dart';
 import '../../presentation/screens/home_screen.dart';
 import '../../presentation/screens/input_form_screen.dart';
+import '../../presentation/screens/profile_screen.dart';
 import '../../presentation/screens/scanner_screen.dart';
 import '../../presentation/screens/splash_screen.dart';
 
@@ -16,6 +17,7 @@ class AppRouter {
   static const String home = '/';
   static const String scan = '/scan';
   static const String customize = '/customize';
+  static const String profile = '/profile';
 
   static String createPath(QrType type) => '/create/${type.name}';
 
@@ -31,6 +33,11 @@ class AppRouter {
           path: splash,
           name: 'splash',
           builder: (context, state) => const QrLinkSplashScreen(),
+        ),
+        GoRoute(
+          path: profile,
+          name: 'profile',
+          builder: (context, state) => const ProfileScreen(),
         ),
         GoRoute(
           path: home,

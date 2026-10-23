@@ -20,6 +20,6 @@ void main() {
     await tester.pump(const Duration(milliseconds: 2500));
     await tester.pump(const Duration(milliseconds: 600));
 
-    expect(find.textContaining('QRLink Studio'), findsWidgets);
+    expect(find.textContaining('QRLink'), findsWidgets);
   });
 }

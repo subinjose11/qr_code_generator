@@ -1,9 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../data/models/qr_type.dart';
-import '../providers/theme_provider.dart';
+import '../providers/auth_provider.dart';
 import 'history_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -50,22 +51,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final themeMode = ref.watch(themeModeProvider);
-
-    IconData themeIcon;
-    switch (themeMode) {
-      case ThemeMode.light:
-        themeIcon = Icons.light_mode;
-        break;
-      case ThemeMode.dark:
-        themeIcon = Icons.dark_mode;
-        break;
-      case ThemeMode.system:
-        themeIcon = Icons.brightness_auto;
-        break;
-    }
-
     final isMyCodesTab = _currentBottomNavIndex == 1;
+
+    final authState = ref.watch(authStateProvider);
+    final user = authState.asData?.value;
 
     return Scaffold(
       appBar: AppBar(
@@ -105,9 +94,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
         actions: [
           IconButton(
-            tooltip: 'Toggle Theme (${themeMode.name})',
-            icon: Icon(themeIcon),
-            onPressed: () => ref.read(themeModeProvider.notifier).toggle(),
+            tooltip: user != null
+                ? (user.displayName ?? 'Profile & Settings')
+                : 'Sign In / Profile',
+            icon: _buildUserAvatar(user, colorScheme),
+            onPressed: () => context.push('/profile'),
           ),
           const SizedBox(width: 8),
         ],
@@ -506,6 +497,62 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildUserAvatar(User? user, ColorScheme colorScheme) {
+    if (user == null) {
+      return CircleAvatar(
+        radius: 17,
+        backgroundColor: colorScheme.surfaceContainerHighest,
+        child: Icon(
+          Icons.person_outline_rounded,
+          size: 20,
+          color: colorScheme.onSurfaceVariant,
+        ),
+      );
+    }
+
+    final photoUrl = user.photoURL;
+    final displayName = user.displayName ?? '';
+    final initial = displayName.isNotEmpty
+        ? displayName[0].toUpperCase()
+        : (user.email?.isNotEmpty == true ? user.email![0].toUpperCase() : 'U');
+
+    return Stack(
+      children: [
+        CircleAvatar(
+          radius: 17,
+          backgroundColor: colorScheme.primary,
+          backgroundImage: photoUrl != null ? NetworkImage(photoUrl) : null,
+          child: photoUrl == null
+              ? Text(
+                  initial,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                )
+              : null,
+        ),
+        Positioned(
+          right: 0,
+          bottom: 0,
+          child: Container(
+            width: 9,
+            height: 9,
+            decoration: BoxDecoration(
+              color: Colors.green,
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: Colors.white,
+                width: 1.5,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
